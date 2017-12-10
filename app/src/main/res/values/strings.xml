@@ -12,4 +12,11 @@
     <string name="key_9">9</string>
     <string name="plus_minus">+-</string>
     <string name="dot">.</string>
+    <string name="key_C">C</string>
+    <string name="key_del">Del</string>
+    <string name="key_divide">/</string>
+    <string name="key_multiply">*</string>
+    <string name="key_plus">+</string>
+    <string name="key_minus">-</string>
+    <string name="key_equals">=</string>
 </resources>

@@ -7,92 +7,131 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private State state;
+    StringBuilder current;
+    private double accumulator;
+    private String operator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        reset();
+    }
+
+    public void on_C(View view) {
+        reset();
+    }
+
+    public void on_del(View view) {
+        if(current.length() > 0 ) {
+            current.deleteCharAt(current.length() - 1);
+        }
+        display();
     }
 
     public void on_0(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "0"));
+        state = state.on_input(current, "0");
+        display();
     }
 
     public void on_1(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "1"));
+        state = state.on_input(current, "1");
+        display();
     }
 
     public void on_2(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "2"));
+        state = state.on_input(current, "2");
+        display();
     }
 
     public void on_3(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "3"));
-    }
+        state = state.on_input(current, "3");
+        display();}
 
     public void on_4(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "4"));
-    }
+        state = state.on_input(current, "4");
+        display();}
 
     public void on_5(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "5"));
-    }
+        state = state.on_input(current, "5");
+        display();}
 
     public void on_6(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "6"));
+        state = state.on_input(current, "6");
+        display();
     }
 
     public void on_7(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "7"));
+        state = state.on_input(current, "7");
+        display();
     }
 
     public void on_8(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "8"));
+        state = state.on_input(current, "8");
+        display();
     }
 
     public void on_9(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "9"));
+        state = state.on_input(current, "9");
+        display();
     }
 
     public void on_dot(View view) {
+        state = state.on_dot(current);
+        display();
+    }
+
+    public void on_negate(View view) {
+        state = state.on_negate(current);
+        display();
+    }
+
+    public void on_equals(View view) {
+        state = state.on_calculate(current,
+                                   accumulator,
+                                   operator);
+        display();
+    }
+
+    public void on_add(View view) {
+        accumulator = Manipulators.to_number(current.toString());
+        operator = "+";
+        state = state.on_operator();
+        display();
+    }
+
+    public void on_subtract(View view) {
+        accumulator = Manipulators.to_number(current.toString());
+        operator = "-";
+        state = state.on_operator();
+        display();
+    }
+
+    public void on_multiply(View view) {
+        accumulator = Manipulators.to_number(current.toString());
+        operator = "*";
+        state = state.on_operator();
+        display();
+    }
+
+    public void on_divide(View view) {
+        accumulator = Manipulators.to_number(current.toString());
+        operator = "/";
+        state = state.on_operator();
+        display();
+    }
+
+    private void display() {
         TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(append(textView.getText().toString(), "."));
+        textView.setText(current.toString());
     }
 
-    public void on_plus_minus(View view) {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(negate(textView.getText().toString()));
-    }
-
-    private String append(String current, String next) {
-        try {
-            Float.parseFloat(current + next + "0");
-            return current + next;
-        }
-        catch (NumberFormatException e) {
-            return current;
-        }
-    }
-
-    private String negate(String current) {
-        if(current.equals("")) {
-            return current;
-        }
-
-        if(current.startsWith("-")) {
-            return current.substring(1);
-        }
-        else {
-            return "-" + current;
-        }
+    private void reset() {
+        state = State.EMPTY;
+        accumulator = 0;
+        operator = "";
+        current = new StringBuilder("0");
+        display();
     }
 }

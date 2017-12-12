@@ -88,43 +88,46 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void on_equals(View view) {
-        state = state.on_calculate(current,
-                                   accumulator,
-                                   operator);
+        state = state.on_calculate(current, accumulator, operator);
+        accumulator = Manipulators.to_number(current.toString());
+        operator = "";
         display();
     }
 
     public void on_add(View view) {
+        state = state.on_calculate(current, accumulator, operator);
         accumulator = Manipulators.to_number(current.toString());
         operator = "+";
-        state = state.on_operator();
         display();
     }
 
     public void on_subtract(View view) {
+        state = state.on_calculate(current, accumulator, operator);
         accumulator = Manipulators.to_number(current.toString());
         operator = "-";
-        state = state.on_operator();
         display();
     }
 
     public void on_multiply(View view) {
+        state = state.on_calculate(current, accumulator, operator);
         accumulator = Manipulators.to_number(current.toString());
         operator = "*";
-        state = state.on_operator();
         display();
     }
 
     public void on_divide(View view) {
+        state = state.on_calculate(current, accumulator, operator);
         accumulator = Manipulators.to_number(current.toString());
         operator = "/";
-        state = state.on_operator();
         display();
     }
 
     private void display() {
-        TextView textView = findViewById(R.id.displayWindow);
-        textView.setText(current.toString());
+        TextView display = findViewById(R.id.displayWindow);
+        display.setText(current.toString());
+        TextView history = findViewById(R.id.history);
+        history.setText("Acc: " + Manipulators.to_string(accumulator) +
+                " Cur: " + current.toString() + " Op:" + operator + "St: " + state);
     }
 
     private void reset() {

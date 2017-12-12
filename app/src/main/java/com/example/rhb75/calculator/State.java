@@ -24,14 +24,10 @@ public enum State {
         }
 
         @Override
-        State on_operator() {
-            return this;
-        }
-
-        @Override
         State on_calculate(StringBuilder current, double accumulator, String operator) {
+            String currentBuffer = Manipulators.to_string(Manipulators.to_number(current.toString()));
             current.setLength(0);
-            current.append(Manipulators.to_string(Manipulators.to_number(current.toString())));
+            current.append(currentBuffer);
             return EMPTY;
         }
 
@@ -53,11 +49,6 @@ public enum State {
         State on_negate(StringBuilder current) {
             Manipulators.negate(current);
             return this;
-        }
-
-        @Override
-        State on_operator() {
-            return EMPTY;
         }
 
         @Override
@@ -102,8 +93,6 @@ public enum State {
     abstract State on_dot(StringBuilder current);
 
     abstract State on_calculate(StringBuilder current, double accumulator, String operator);
-
-    abstract State on_operator();
 
     abstract State on_negate(StringBuilder current);
 }

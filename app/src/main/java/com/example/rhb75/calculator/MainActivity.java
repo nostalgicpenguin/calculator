@@ -8,9 +8,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     private State state;
-    StringBuilder current;
-    private double accumulator;
-    private String operator;
+    private Calculator calculator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,122 +17,112 @@ public class MainActivity extends AppCompatActivity {
         reset();
     }
 
-    public void on_C(View view) {
+    public void onClear(View view) {
         reset();
     }
 
-    public void on_del(View view) {
-        if(current.length() > 0 ) {
-            current.deleteCharAt(current.length() - 1);
-        }
+    public void onDelete(View view) {
+        state = state.on_delete(calculator);
         display();
     }
 
-    public void on_0(View view) {
-        state = state.on_input(current, "0");
+    public void onKey0(View view) {
+        state = state.on_input(calculator, "0");
         display();
     }
 
-    public void on_1(View view) {
-        state = state.on_input(current, "1");
+    public void onKey1(View view) {
+        state = state.on_input(calculator, "1");
         display();
     }
 
-    public void on_2(View view) {
-        state = state.on_input(current, "2");
+    public void onKey2(View view) {
+        state = state.on_input(calculator, "2");
         display();
     }
 
-    public void on_3(View view) {
-        state = state.on_input(current, "3");
+    public void onKey3(View view) {
+        state = state.on_input(calculator, "3");
         display();}
 
-    public void on_4(View view) {
-        state = state.on_input(current, "4");
+    public void onKey4(View view) {
+        state = state.on_input(calculator, "4");
         display();}
 
-    public void on_5(View view) {
-        state = state.on_input(current, "5");
+    public void onKey5(View view) {
+        state = state.on_input(calculator, "5");
         display();}
 
-    public void on_6(View view) {
-        state = state.on_input(current, "6");
+    public void onKey6(View view) {
+        state = state.on_input(calculator, "6");
         display();
     }
 
-    public void on_7(View view) {
-        state = state.on_input(current, "7");
+    public void onKey7(View view) {
+        state = state.on_input(calculator, "7");
         display();
     }
 
-    public void on_8(View view) {
-        state = state.on_input(current, "8");
+    public void onKey8(View view) {
+        state = state.on_input(calculator, "8");
         display();
     }
 
-    public void on_9(View view) {
-        state = state.on_input(current, "9");
+    public void onKey9(View view) {
+        state = state.on_input(calculator, "9");
         display();
     }
 
     public void on_dot(View view) {
-        state = state.on_dot(current);
+        state = state.on_dot(calculator);
         display();
     }
 
-    public void on_negate(View view) {
-        state = state.on_negate(current);
+    public void onNegate(View view) {
+        state = state.on_negate(calculator);
         display();
     }
 
-    public void on_equals(View view) {
-        state = state.on_calculate(current, accumulator, operator);
-        accumulator = Manipulators.to_number(current.toString());
-        operator = "";
+    public void onEquals(View view) {
+        state = state.on_calculate(calculator, "");
         display();
     }
 
-    public void on_add(View view) {
-        state = state.on_calculate(current, accumulator, operator);
-        accumulator = Manipulators.to_number(current.toString());
-        operator = "+";
+    public void onAdd(View view) {
+        state = state.on_calculate(calculator, "+");
         display();
     }
 
-    public void on_subtract(View view) {
-        state = state.on_calculate(current, accumulator, operator);
-        accumulator = Manipulators.to_number(current.toString());
-        operator = "-";
+    public void onSubtract(View view) {
+        state = state.on_calculate(calculator, "-");
         display();
     }
 
-    public void on_multiply(View view) {
-        state = state.on_calculate(current, accumulator, operator);
-        accumulator = Manipulators.to_number(current.toString());
-        operator = "*";
+    public void onMultiply(View view) {
+        state = state.on_calculate(calculator, "*");
         display();
     }
 
-    public void on_divide(View view) {
-        state = state.on_calculate(current, accumulator, operator);
-        accumulator = Manipulators.to_number(current.toString());
-        operator = "/";
+    public void onDivide(View view) {
+        state = state.on_calculate(calculator, "/");
+        display();
+    }
+
+    public void onSquareRoot(View view) {
+        state = state.on_sqrt(calculator);
         display();
     }
 
     private void display() {
         TextView display = findViewById(R.id.displayWindow);
-        display.setText(current.toString());
+        display.setText(calculator.getBufferAsString());
         TextView history = findViewById(R.id.history);
-        history.setText("Acc: " + Manipulators.to_string(accumulator) +
-                " Cur: " + current.toString() + " Op:" + operator + "St: " + state);
+        history.setText(calculator.getHistory());
     }
 
     private void reset() {
         state = State.EMPTY;
-        accumulator = 0;
-        operator = "";
-        current = new StringBuilder("0");
+        calculator = new Calculator();
         display();
     }
 }

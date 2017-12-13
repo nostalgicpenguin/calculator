@@ -4,96 +4,132 @@ public enum State {
 
     EMPTY {
         @Override
-        State on_input(StringBuilder current, String key) {
-            current.setLength(0);
-            current.append(key);
+        State on_input(Calculator calculator, String key) {
+            calculator.setBuffer(key);
             return APPEND;
         }
 
-        State on_dot(StringBuilder current) {
-            current.setLength(0);
-            current.append("0.");
-            return APPEND;
-        }
-
-        @Override
-        State on_negate(StringBuilder current) {
-            current.setLength(0);
-            current.append("-");
+        State on_dot(Calculator calculator) {
+            calculator.setBuffer("0.");
             return APPEND;
         }
 
         @Override
-        State on_calculate(StringBuilder current, double accumulator, String operator) {
-            String currentBuffer = Manipulators.to_string(Manipulators.to_number(current.toString()));
-            current.setLength(0);
-            current.append(currentBuffer);
+        State on_delete(Calculator calculator) {
+            calculator.setBuffer("0");
+            return this;
+        }
+
+        @Override
+        State on_negate(Calculator calculator) {
+            calculator.negateBuffer();
+            return APPEND;
+        }
+
+        @Override
+        State on_calculate(Calculator calculator, String newOperator) {
+            calculator.normaliseBuffer();
+            calculator.setOperator(newOperator);
             return EMPTY;
         }
-
+        @Override
+        State on_sqrt(Calculator calculator) {
+            calculator.sqrt();
+            return EMPTY;
+        }
     },
+
     APPEND {
         @Override
-        State on_input(StringBuilder current, String key) {
-            Manipulators.append(current, key);
+        State on_input(Calculator calculator, String key) {
+            calculator.pushBuffer(key);
             return this;
         }
 
         @Override
-        State on_dot(StringBuilder current) {
-            Manipulators.append(current, ".");
+        State on_dot(Calculator calculator) {
+            calculator.pushBuffer(".");
             return this;
         }
 
         @Override
-        State on_negate(StringBuilder current) {
-            Manipulators.negate(current);
+        State on_delete(Calculator calculator) {
+            calculator.popBuffer();
             return this;
         }
 
         @Override
-        State on_calculate(StringBuilder current, double lhs, String operator) {
-            double rhs = Manipulators.to_number(current.toString());
-            double result;
+        State on_negate(Calculator calculator) {
+            calculator.negateBuffer();
+            return this;
+        }
 
-            switch (operator) {
-                case "+":
-                    result = lhs + rhs;
-                    break;
+        @Override
+        State on_calculate(Calculator calculator, String newOperator) {
+            calculator.updateHistory(newOperator);
+            calculator.calculate();
+            calculator.setOperator(newOperator);
+            return FINALISED;
+        }
 
-                case "-":
-                    result = lhs - rhs;
-                    break;
+        @Override
+        State on_sqrt(Calculator calculator) {
+            calculator.sqrt();
+            return FINALISED;
+        }
+    },
 
-                case "*":
-                    result = lhs * rhs;
-                    break;
+    FINALISED {
+        @Override
+        State on_input(Calculator calculator, String key) {
+            calculator.setBuffer(key);
+            return APPEND;
+        }
 
-                case "/":
-                    result = lhs / rhs;
-                    break;
+        @Override
+        State on_dot(Calculator calculator) {
+            calculator.setBuffer("0.");
+            return APPEND;
+        }
 
-                default:
-                    result = rhs;
-            }
-
-            current.setLength(0);
-            if (Double.isInfinite(result)) {
-                current.append("Error");
-            } else {
-                current.append(Manipulators.to_string(result));
-            }
-
+        @Override
+        State on_delete(Calculator calculator) {
+            calculator.setBuffer("0");
             return EMPTY;
+        }
+
+        @Override
+        State on_negate(Calculator calculator) {
+            calculator.negateBuffer();
+            return APPEND;
+        }
+
+        @Override
+        State on_calculate(Calculator calculator, String newOperator) {
+            calculator.normaliseBuffer();
+            calculator.updateHistory(newOperator);
+            calculator.calculate();
+            calculator.setOperator(newOperator);
+            return FINALISED;
+        }
+
+        @Override
+        State on_sqrt(Calculator calculator) {
+            calculator.sqrt();
+            return FINALISED;
         }
     };
 
-    abstract State on_input(StringBuilder current, String key);
+    abstract State on_input(Calculator calculator, String key);
 
-    abstract State on_dot(StringBuilder current);
+    abstract State on_dot(Calculator calculator);
 
-    abstract State on_calculate(StringBuilder current, double accumulator, String operator);
+    abstract State on_delete(Calculator calculator);
 
-    abstract State on_negate(StringBuilder current);
+    abstract State on_calculate(Calculator calculator, String newOperator);
+
+    abstract State on_negate(Calculator calculator);
+
+    abstract State on_sqrt(Calculator calculator);
 }
 

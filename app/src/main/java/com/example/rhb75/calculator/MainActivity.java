@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void display() {
         TextView display = findViewById(R.id.displayWindow);
-        display.setText(calculator.getBufferAsString());
+        display.setText(calculator.buffer().asString());
         TextView history = findViewById(R.id.history);
         history.setText(calculator.getHistory());
     }

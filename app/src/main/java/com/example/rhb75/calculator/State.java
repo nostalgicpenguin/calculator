@@ -5,30 +5,30 @@ public enum State {
     EMPTY {
         @Override
         State on_input(Calculator calculator, String key) {
-            calculator.setBuffer(key);
+            calculator.buffer().set(key);
             return APPEND;
         }
 
         State on_dot(Calculator calculator) {
-            calculator.setBuffer("0.");
+            calculator.buffer().set("0.");
             return APPEND;
         }
 
         @Override
         State on_delete(Calculator calculator) {
-            calculator.setBuffer("0");
+            calculator.buffer().set("0");
             return this;
         }
 
         @Override
         State on_negate(Calculator calculator) {
-            calculator.negateBuffer();
+            calculator.buffer().negate();
             return APPEND;
         }
 
         @Override
         State on_calculate(Calculator calculator, String newOperator) {
-            calculator.normaliseBuffer();
+            calculator.buffer().normalise();
             calculator.setOperator(newOperator);
             return EMPTY;
         }
@@ -42,33 +42,31 @@ public enum State {
     APPEND {
         @Override
         State on_input(Calculator calculator, String key) {
-            calculator.pushBuffer(key);
+            calculator.buffer().push(key);
             return this;
         }
 
         @Override
         State on_dot(Calculator calculator) {
-            calculator.pushBuffer(".");
+            calculator.buffer().push(".");
             return this;
         }
 
         @Override
         State on_delete(Calculator calculator) {
-            calculator.popBuffer();
+            calculator.buffer().pop();
             return this;
         }
 
         @Override
         State on_negate(Calculator calculator) {
-            calculator.negateBuffer();
+            calculator.buffer().negate();
             return this;
         }
 
         @Override
         State on_calculate(Calculator calculator, String newOperator) {
-            calculator.updateHistory(newOperator);
-            calculator.calculate();
-            calculator.setOperator(newOperator);
+            calculator.calculate(newOperator);
             return FINALISED;
         }
 
@@ -82,34 +80,32 @@ public enum State {
     FINALISED {
         @Override
         State on_input(Calculator calculator, String key) {
-            calculator.setBuffer(key);
+            calculator.buffer().set(key);
             return APPEND;
         }
 
         @Override
         State on_dot(Calculator calculator) {
-            calculator.setBuffer("0.");
+            calculator.buffer().set("0.");
             return APPEND;
         }
 
         @Override
         State on_delete(Calculator calculator) {
-            calculator.setBuffer("0");
+            calculator.buffer().set("0");
             return EMPTY;
         }
 
         @Override
         State on_negate(Calculator calculator) {
-            calculator.negateBuffer();
+            calculator.buffer().negate();
             return APPEND;
         }
 
         @Override
         State on_calculate(Calculator calculator, String newOperator) {
-            calculator.normaliseBuffer();
-            calculator.updateHistory(newOperator);
-            calculator.calculate();
-            calculator.setOperator(newOperator);
+            calculator.buffer().normalise();
+            calculator.calculate(newOperator);
             return FINALISED;
         }
 
